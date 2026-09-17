@@ -1,0 +1,228 @@
+Implementation of Tic-Tac-Toe with AI using Minimax
+Algorithm
+1 Lab Overview
+Tic-Tac-Toe is a classic strategy game that serves as an excellent platform for demonstrating
+fundamental artificial intelligence concepts. This project implements a complete Tic-Tac-
+Toe game with an AI opponent that uses the Minimax algorithm to make optimal moves.
+The implementation showcases how AI techniques can be applied to solve seemingly simple
+games that nevertheless involve complex decision-making processes.
+2 Theoretical Background
+2.1 Minimax Algorithm
+The Minimax algorithm is a decision-making algorithm used in two-player games. It assumes
+that both players play optimally and aims to minimize the possible loss for the worst-case
+scenario. The algorithm recursively evaluates all possible moves, building a game tree where:
+•MAX player (AI) aims to maximize the score
+•MIN player (human) aims to minimize the score
+•Terminal states have values: +1 (AI wins), -1 (human wins), 0 (draw)
+3 Implementation
+The implementation consists of a single Python classTicTacToewith the following compo-
+nents:
+•Board representation using a NumPy array
+•Game state management
+•Move validation logic
+•Win condition checking
+1
+September 16, 2026
+Prashanth Nayak
+
+•Minimax algorithm implementation
+•Text-based user interface
+3.1 Code Implementation
+1import numpy as np
+2import random
+3
+4class T ic Ta cT o e :
+5def __init__ ( self ) :
+6self . board = np . array ([ ’ ’] * 9) # 3 x3 board r e p r e s e n t e d as 1 D
+array
+7self . c u r r e n t _ p l a y e r = ’X ’ # Human is X , AI is O
+8self . g a me _o ve r = False
+9self . winner = None
+10
+11def p r i n t _ b o a r d ( self ) :
+12" " " Display the current board state " " "
+13print ( " \ n " )
+14for i in range (3) :
+15print ( f " { self . board [ i *3]} | { self . board [ i *3+1]} | { self . board
+[ i *3+2]} " )
+16if i < 2:
+17print ( " - - - - - - - - - - - " )
+18print ( " \ n " )
+19
+20def a v a i l a b l e _ m o v e s ( self ) :
+21" " " Return list of av ai la bl e moves ( indices of empty cells ) " " "
+22return [ i for i , spot in en um er at e ( self . board ) if spot == ’ ’]
+23
+24def m a ke _m ov e ( self , position , player ) :
+25" " " Make a move on the board " " "
+26if self . board [ position ] == ’ ’:
+27self . board [ position ] = player
+28return True
+29return False
+30
+31def c h e c k _ w i n n e r ( self ) :
+32" " " Check if there ’s a winner or if the game is a draw " " "
+33# Check rows
+34for i in range (0 , 9 , 3) :
+35if self . board [ i ] != ’ ’ and self . board [ i ] == self . board [ i +1]
+== self . board [ i +2]:
+36return self . board [ i ]
+37
+38# Check columns
+39for i in range (3) :
+40if self . board [ i ] != ’ ’ and self . board [ i ] == self . board [ i +3]
+== self . board [ i +6]:
+41return self . board [ i ]
+42
+43# Check di ag on al s
+2
+
+44if self . board [0] != ’ ’ and self . board [0] == self . board [4] == self
+. board [8]:
+45return self . board [0]
+46if self . board [2] != ’ ’ and self . board [2] == self . board [4] == self
+. board [6]:
+47return self . board [2]
+48
+49# Check for draw
+50if ’ ’ not in self . board :
+51return ’ Draw ’
+52
+53return None
+54
+55def minimax ( self , board , depth , i s _ m a x i m i z i n g ) :
+56" " " Minimax al go ri th m for AI move se le ct io n " " "
+57# Base cases : check for terminal states
+58result = self . c h e c k _ w i n n e r ()
+59if result == ’O ’: # AI wins
+60return 1
+61elif result == ’X ’: # Human wins
+62return -1
+63elif result == ’ Draw ’:
+64return 0
+65
+66if i s _ m a x i m i z i n g :
+67b e s t _ s c o r e = - float ( ’ inf ’)
+68for move in self . a v a i l a b l e _ m o v e s () :
+69board [ move ] = ’O ’
+70score = self . minimax ( board , depth + 1 , False )
+71board [ move ] = ’ ’
+72b e s t _ s c o r e = max ( score , b e s t _ s c o r e )
+73return b e s t _ s c o r e
+74else :
+75b e s t _ s c o r e = float ( ’ inf ’)
+76for move in self . a v a i l a b l e _ m o v e s () :
+77board [ move ] = ’X ’
+78score = self . minimax ( board , depth + 1 , True )
+79board [ move ] = ’ ’
+80b e s t _ s c o r e = min ( score , b e s t _ s c o r e )
+81return b e s t _ s c o r e
+82
+83def ai_move ( self ) :
+84" " " De te rm in e the best move for the AI using minimax " " "
+85b e s t _ s c o r e = - float ( ’ inf ’)
+86b es t _m ov e = None
+87
+88for move in self . a v a i l a b l e _ m o v e s () :
+89self . board [ move ] = ’O ’
+90score = self . minimax ( self . board , 0 , False )
+91self . board [ move ] = ’ ’
+92
+93if score > b e s t _ s c o r e :
+94b e s t _ s c o r e = score
+95be st _m ov e = move
+3
+
+96
+97return be st _m ov e
+98
+99def play ( self ) :
+100" " " Main game loop " " "
+101print ( " Welcome to Tic - Tac - Toe ! " )
+102print ( " You are X , and the AI is O . " )
+103print ( " Enter a number (0 -8) to make your move : " )
+104print ( " 0 | 1 | 2 " )
+105print ( " - - - - - - - - - - - " )
+106print ( " 3 | 4 | 5 " )
+107print ( " - - - - - - - - - - - " )
+108print ( " 6 | 7 | 8 " )
+109
+110while not self . ga me _o ve r :
+111self . p r i n t _ b o a r d ()
+112
+113if self . c u r r e n t _ p l a y e r == ’X ’:
+114# Human ’s turn
+115try :
+116move = int ( input ( " Your move (0 -8) : " ) )
+117if move < 0 or move > 8:
+118print ( " Please enter a number between 0 and 8. " )
+119continue
+120if not self . ma ke _m ov e ( move , ’X ’) :
+121print ( " That position is already taken . Try again . "
+)
+122continue
+123except V a l u e E r r o r :
+124print ( " Please enter a valid number . " )
+125continue
+126else :
+127# AI ’s turn
+128print ( " AI is thinking ... " )
+129move = self . ai_move ()
+130self . ma ke _m ov e ( move , ’O ’)
+131print ( f " AI chooses position { move } " )
+132
+133# Check for game over
+134result = self . c h e c k _ w i n n e r ()
+135if result :
+136self . ga me _o ve r = True
+137self . winner = result
+138self . p r i n t _ b o a r d ()
+139if result == ’ Draw ’:
+140print ( " It ’s a draw ! " )
+141else :
+142print ( f " { result } wins ! " )
+143else :
+144# Switch players
+145self . c u r r e n t _ p l a y e r = ’O ’ if self . c u r r e n t _ p l a y e r == ’X ’
+else ’X ’
+146
+147# Run the game
+4
+
+148if __name__ == " __main__ " :
+149game = Ti cT ac To e ()
+150game . play ()
+Listing 1: Complete Tic-Tac-Toe AI Implementation
+4 Instructions for Use
+4.1 Prerequisites
+•Python 3.x installed on your system
+•NumPy library (install withpip install numpy)
+4.2 Running the Game
+1. Create a new Python file namedtic tac toe ai.py
+2. Copy the code from Listing 1 into the file
+3. Save the file
+4. Open a terminal and navigate to the directory containing the file
+5. Run the game with:python tic tac toe ai.py
+4.3 Gameplay Instructions
+•You play as ’X’ and the AI is ’O’
+•When it’s your turn, enter a number from 0 to 8 corresponding to the position on the
+board:
+0 1 2
+3 4 5
+6 7 8
+•The AI will automatically make its move after yours
+•The game continues until someone wins or it’s a draw
+5 Conclusion
+This implementation of Tic-Tac-Toe with an AI opponent provides a practical demonstration
+of fundamental AI concepts. The Minimax algorithm, while simple in concept, forms the
+basis for more complex game-playing algorithms used in advanced AI systems. This project
+serves as an excellent foundation for understanding adversarial search and decision-making
+in AI.
+5
+
+References
+1. Russell, S., & Norvig, P. (2020). Artificial Intelligence: A Modern Approach (4th ed.).
+Pearson.
+2. Rich, E., Knight, K., & Nair, S. B. (2009). Artificial Intelligence. McGraw-Hill.
+3. Nilsson, N. J. (2014). Principles of Artificial Intelligence. Morgan Kaufmann.
+6
